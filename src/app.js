@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 config({ path: "../.env" });
 import express from "express";
-import { blogRouter } from "./routes/BlogRouter.js";
+import { blogRouter, userRouter } from "./routes";
 import { connectDB } from "./db.js";
 
 const port = process.env.PORT;
@@ -23,6 +23,7 @@ class App {
 
     initializeRoutes() {
         this.app.use("/blog", blogRouter);
+        this.app.use("/user", userRouter);
     }
 
     startServer() {
