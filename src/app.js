@@ -1,7 +1,8 @@
 import { config } from "dotenv";
 config({ path: "../.env" });
 import express from "express";
-import { blogRouter, userRouter } from "./routes";
+import { blogRouter } from "./routes/BlogRouter.js";
+import { userRouter } from "./routes/UserRouter.js";
 import { connectDB } from "./db.js";
 
 const port = process.env.PORT;

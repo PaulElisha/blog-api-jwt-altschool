@@ -3,17 +3,17 @@ import UserController from "../controllers/UserControllers.js";
 
 class UserRouter {
     constructor() {
-        this.userRouter = express.Router();
+        this.router = express.Router();
         this.userController = new UserController();
         this.registerRoutes();
     }
 
     registerRoutes() {
-        this.userRouter.get("/", this.userController.getBlogs);
-        this.userRouter.get("/:id", this.userController.getBlogById);
-        this.userRouter.post("/", this.userController.postBlog);
-        this.userRouter.put("/:id", this.userController.updateBlog);
-        this.userRouter.delete("/:id", this.userController.deleteBlog);
+        this.router.get("/", this.userController.getUsers);
+        this.router.get("/:id", this.userController.getUserById);
+        this.router.post("/", this.userController.postUser);
+        this.router.put("/:id", this.userController.updateUser);
+        this.router.delete("/:id", this.userController.deleteUser);
     }
 }
 
