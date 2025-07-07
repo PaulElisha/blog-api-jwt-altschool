@@ -1,79 +1,76 @@
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-import Blog from "../models/Blog.js";
+import BlogService from "../services/BlogService.js";
 
 class BlogController {
     constructor() {
-        this.__path = fileURLToPath(import.meta.url);
-        this.__dirname = dirname(this.__path);
-        this.port = process.env.port;
-        this.filePath = join(this.__dirname, "../db/Blogs.json");
+        this.blogService = new BlogService();
+    }
+
+    getPublishedBlogs = async (req, res) => {
+        const query = {};
+
+        if (req.query.published) {
+            query.published = req.query.published;
+        }
+        try {
+            const response = await this.blogService.getPublishedBlogs(query);
+            res.status(200).json({ message: "Published blogs fetched successfully", status: "   ok", data: response });
+        } catch (error) {
+            console.error("Error fetching published blogs:", error);
+            res.status(500).json({ message: "Internal Server Error", status: "error" });
+        }
+    }
+
+    getAPublishedBlog = async (req, res) => {
+        const id = req.params.id;
+
+        try {
+            const response = await this.blogService.getAPublishedBlog(id);
+            res.status(200).json({ message: "Published blogs fetched successfully", status: "   ok", data: response });
+        } catch (error) {
+            console.error("Error fetching published blogs:", error);
+            res.status(500).json({ message: "Internal Server Error", status: "error" });
+        }
     }
 
     getBlogs = async (req, res) => {
-        Blog.find({}).then((Blogs) => {
-            res.status(200).json(Blogs);
+        try {
+            const response = await this.blogService.getBlogs();
+            res.status(200).json({ message: "Blogs fetched successfully", status: "ok", data: response });
+        } catch (error) {
+            console.error("Error fetching blogs:", error);
+            res.status(500).json({ message: "Internal Server Error", status: "error" });
         }
-        ).catch((err) => {
-            console.error("Error fetching Blogs:", err);
-            res.status(500).json({ message: "Internal Server Error" });
-        });
     }
 
-    getBlogById = async (req, res) => {
+    createBlog = async (req, res) => {
+        try {
+            const response = await this.blogService.createBlog(req.body);
+            res.status(201).json({ message: "User created successfully", status: "ok", data: response });
 
-        Blog.findById(req.params.id).then((Blog) => {
-            if (!Blog) {
-                res.status(404).json({ message: "Blog not found" });
-                return;
-            }
-            res.status(200).json(Blog)
-        }).catch((err) => {
-            console.error("Error fetching Blog:", err);
-            res.status(500).json({ message: "Internal Server Error" });
-        })
-    }
-
-    postBlog = async (req, res) => {
-
-        Blog.create(req.body)
-            .then((Blog) => {
-                res.status(201).json({ message: "Blog created successfully", status: "ok" });
-            })
-            .catch((err) => {
-                console.error("Error creating Blog:", err);
-                res.status(500).json({ message: "Internal Server Error" });
-            }
-            );
+        } catch (error) {
+            console.error("Error creating User:", err);
+            res.status(500).json({ message: "Internal Server Error", status: "error" });
+        }
     }
 
     updateBlog = async (req, res) => {
-
-
-        Blog.findByIdAndUpdate(req.params.id, req.body, { new: true })
-            .then((Blog) => {
-                if (!Blog) {
-                    res.status(404).json({ message: "Blog not found" });
-                    return;
-                }
-                res.status(200).json({ Blog });
-            })
-            .catch((err) => {
-                console.error("Error updating Blog:", err);
-                res.status(500).json({ message: "Internal Server Error" });
-            });
+        try {
+            const response = await this.blogService.updateBlog(req.params.id, req.body);
+            res.status(200).json({ message: "Blog updated successfully", status: "ok", data: response });
+        } catch (error) {
+            console.error("Error updating Blog:", error);
+            res.status(500).json({ message: "Internal Server Error", status: "error" });
+        }
     }
 
     deleteBlog = async (req, res) => {
-
-        Blog.findByIdAndDelete(req.params.id)
-            .then(() => {
-                res.status(200).json({ message: "Blog deleted successfully" });
-            })
-            .catch((err) => {
-                console.error("Error updating Blog:", err);
-                res.status(500).json({ message: "Internal Server Error" });
-            });
+        try {
+            const response = await this.blogService.deleteBlog(req.params.id);
+            res.status(200).json({ message: "Blog deleted successfully", status: "ok" });
+        } catch (error) {
+            console.error("Error deleting Blog:", error);
+            res.status(500).json({ message: "Internal Server Error", status: "error" });
+        }
     }
 }
 

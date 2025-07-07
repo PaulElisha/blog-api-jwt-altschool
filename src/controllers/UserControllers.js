@@ -1,79 +1,61 @@
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-import User from "../models/User.js";
+import UserService from "../services/UserService.js";
 
 class UserController {
+
     constructor() {
-        this.__path = fileURLToPath(import.meta.url);
-        this.__dirname = dirname(this.__path);
-        this.port = process.env.port;
-        this.filePath = join(this.__dirname, "../db/Users.json");
+        this.userService = new UserService();
     }
 
     getUsers = async (req, res) => {
-        User.find({}).then((Users) => {
-            res.status(200).json(Users);
+        try {
+            const response = await this.userService.getUsers();
+            res.status(200).json({ message: "Users fetched successfully", status: "ok", data: response });
+        } catch (error) {
+            res.status(404).json({ message: "No users found", status: "error" });
         }
-        ).catch((err) => {
-            console.error("Error fetching Users:", err);
-            res.status(500).json({ message: "Internal Server Error" });
-        });
     }
 
-    getUserById = async (req, res) => {
+    createUser = async (req, res) => {
+        try {
+            const response = await this.userService.createUser(req.body);
+            res.status(201).json({ message: "User created successfully", status: "ok", data: response });
 
-        User.findById(req.params.id).then((User) => {
-            if (!User) {
-                res.status(404).json({ message: "User not found" });
-                return;
-            }
-            res.status(200).json(User)
-        }).catch((err) => {
-            console.error("Error fetching User:", err);
-            res.status(500).json({ message: "Internal Server Error" });
-        })
+        } catch (error) {
+            console.error("Error creating User:", err);
+            res.status(500).json({ message: "Internal Server Error", status: "error" });
+        }
     }
 
-    postUser = async (req, res) => {
-
-        User.create(req.body)
-            .then((User) => {
-                res.status(201).json({ message: "User created successfully", status: "ok" });
-            })
-            .catch((err) => {
-                console.error("Error creating User:", err);
-                res.status(500).json({ message: "Internal Server Error" });
-            }
-            );
+    loginUser = async (req, res) => {
+        try {
+            const { user, token } = await this.userService.loginUser(req.body);
+            res.status(200).json({
+                success: true, message: "User logged in successfully", data: { user: user, token: token }
+            });
+        } catch (error) {
+            res.status(error.statusCode).json({ success: false, error: error.message });
+        }
     }
+
 
     updateUser = async (req, res) => {
-
-
-        User.findByIdAndUpdate(req.params.id, req.body, { new: true })
-            .then((User) => {
-                if (!User) {
-                    res.status(404).json({ message: "User not found" });
-                    return;
-                }
-                res.status(200).json({ User });
-            })
-            .catch((err) => {
-                console.error("Error updating User:", err);
-                res.status(500).json({ message: "Internal Server Error" });
-            });
+        try {
+            const response = await this.userService.updateUser(req.params.id, req.body);
+            res.status(200).json({ message: "User updated successfully", status: "ok", data: response });
+        } catch (error) {
+            console.error("Error updating User:", error);
+            res.status(500).json({ message: "Internal Server Error", status: "error" });
+        }
     }
 
     deleteUser = async (req, res) => {
-
-        User.findByIdAndDelete(req.params.id)
-            .then(() => {
-                res.status(200).json({ message: "User deleted successfully" });
-            })
-            .catch((err) => {
-                console.error("Error updating User:", err);
-                res.status(500).json({ message: "Internal Server Error" });
-            });
+        try {
+            const response = await this.userService.deleteUser(req.params.id);
+            res.status(200).json({ message: "User deleted successfully", status: "ok" });
+        } catch (error) {
+            console.error("Error deleting User:", error);
+            res.status(500).json({ message: "Internal Server Error", status: "error" });
+        }
     }
 }
 

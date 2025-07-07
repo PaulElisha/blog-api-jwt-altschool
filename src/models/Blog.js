@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-const Schema = mongoose.Schema;
+import { Schema, model } from "mongoose";
 
 const blogSchema = new Schema({
     title: {
@@ -8,17 +7,22 @@ const blogSchema = new Schema({
         unique: true
     },
     author: {
-        type: String
+        type: String,
+        required: true
     },
     description: {
-        type: String
+        type: String,
+        required: true
     },
     state: {
-        type: Boolean,
-        default: true
+        type: String,
+        enum: ["published", "archived", "draft", "deleted"],
+        required: true,
+        default: "draft"
     },
     readCount: {
         type: Number,
+        default: 0
     },
     readingTime: {
         type: String
@@ -27,12 +31,13 @@ const blogSchema = new Schema({
         type: Array
     },
     body: {
-        type: String
+        type: String,
+        required: true
     }
 
 }, { timestamps: true });
 
-export default mongoose.model("Blog", blogSchema);
+export default model("Blog", blogSchema);
 
 
 
