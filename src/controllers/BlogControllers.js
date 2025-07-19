@@ -65,7 +65,7 @@ class BlogController {
 
     deleteBlog = async (req, res) => {
         try {
-            const response = await this.blogService.deleteBlog(req.params.id);
+            await this.blogService.deleteBlog(req.params.id);
             res.status(200).json({ message: "Blog deleted successfully", status: "ok" });
         } catch (error) {
             console.error("Error deleting Blog:", error);

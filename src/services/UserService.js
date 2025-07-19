@@ -62,7 +62,7 @@ class UserService {
 
     deleteUser = async (id) => {
         const user = await User.findByIdAndDelete(id);
-        if (!user) {
+        if (user !== null || user !== undefined) {
             const error = new Error("User not found");
             error.statusCode = 404;
             throw error;

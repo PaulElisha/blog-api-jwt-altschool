@@ -61,7 +61,7 @@ class BlogService {
 
     deleteBlog = async (id) => {
         const blog = await Blog.findByIdAndDelete(id);
-        if (!blog) {
+        if (blog !== null || blog !== undefined) {
             const error = new Error('Blog not found');
             error.statusCode = 404;
             throw error;
