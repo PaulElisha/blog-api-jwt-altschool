@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-class Db {
+class connectDb {
 
     constructor() {
         this.connectDB();
@@ -16,4 +16,4 @@ class Db {
         });
     }
 }
-export { Db };
+export { connectDb };

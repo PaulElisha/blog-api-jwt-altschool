@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { generateUserToken } from "../utils/generateToken.js";
 
 class UserService {
 
@@ -67,11 +67,6 @@ class UserService {
             error.statusCode = 404;
             throw error;
         }
-    }
-
-    generateUserToken = (user) => {
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        return token;
     }
 }
 

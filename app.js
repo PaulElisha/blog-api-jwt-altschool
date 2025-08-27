@@ -3,7 +3,7 @@ config({ path: ".env" });
 import express from "express";
 import { blogRouter } from "./src/routes/BlogRouter.js";
 import { userRouter } from "./src/routes/UserRouter.js";
-import { Db } from "./src/config/db.js";
+import { connectDb } from "./src/config/connectDb.js";
 
 const port = process.env.PORT;
 const hostname = process.env.HOSTNAME;
@@ -12,7 +12,7 @@ console.log("Port and Hostname:", `${port} - ${hostname} - ${MONGODB_URI}`);
 
 class App {
     constructor() {
-        this.db = new Db();
+        this.db = new connectDb();
         this.app = express();
         this.initializeMiddlewares();
         this.initializeRoutes();

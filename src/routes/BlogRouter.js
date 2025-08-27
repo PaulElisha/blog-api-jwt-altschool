@@ -1,5 +1,5 @@
 import express from 'express';
-import BlogController from "../controllers/BlogControllers.js";
+import { BlogController } from "../controllers/BlogControllers.js";
 import { BlogValidation } from "../middlewares/BlogValidation.js"
 import { UserAuthorization } from "../middlewares/AuthorizeUser.js";
 
@@ -15,6 +15,7 @@ class BlogRouter {
     registerRoutes() {
         this.router.get("/", this.blogController.getBlogs);
         this.router.get("/", this.blogController.getPublishedBlogs);
+        this.router.get("/", this.blogController.getUserBlogs);
         this.router.get("/:id", this.blogController.getAPublishedBlog);
         this.router.post("/", this.userAccess.authorizeUser, this.blogValidation.validateBlog, this.blogController.createBlog);
         this.router.put("/:id", this.userAccess.authorizeUser, this.blogController.updateBlog);

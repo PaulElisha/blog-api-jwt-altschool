@@ -48,21 +48,46 @@ class BlogService {
         return blogs;
     }
 
-
-    updateBlog = async (id, data) => {
-        const blog = await Blog.findByIdAndUpdate(id, data, { new: true });
-        if (!blog) {
-            const error = new Error('Blog not found');
+    getUserBlogs = async (userId) => {
+        const blogs = await Blog.find({ userId });
+        if (!blogs || blogs.length === 0) {
+            const error = new Error('No blogs found for this user');
             error.statusCode = 404;
             throw error;
         }
-        return { message: "Blog updated successfully", data: blog };
+        return blogs;
     }
 
-    deleteBlog = async (id) => {
-        const blog = await Blog.findByIdAndDelete(id);
-        if (blog !== null || blog !== undefined) {
-            const error = new Error('Blog not found');
+
+    updateBlog = async (filter, updateData) => {
+        const blog = await Blog.findOne(filter);
+        if (!blog) {
+            const error = new Error('Blog not found or unauthorized');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const updatedProduct = await Blog.findOneAndUpdate(filter, updateData, { new: true });
+
+        if (!updatedProduct) {
+            const error = new Error('Product update failed');
+            error.statusCode = 500;
+            throw error;
+        }
+    }
+
+    deleteBlog = async (filter) => {
+        const blog = await Blog.findOne(filter);
+        if (!blog) {
+            const error = new Error('Blog not found or unauthorized');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const deletedProduct = await Blog.findOneAndDelete(filter, updateData, { new: true });
+
+        if (!deletedProduct) {
+            const error = new Error('Deletion unsuccessful');
             error.statusCode = 404;
             throw error;
         }
