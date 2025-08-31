@@ -5,52 +5,25 @@ class BlogController {
         this.blogService = new BlogService();
     }
 
-    getPublishedBlogs = async (req, res) => {
+    getBlogs = async (req, res) => {
+
         const query = {};
 
         const { state } = req.query;
+        const { userId } = req.user;
 
         if (state) {
-            query.state = state
+            query.state = state;
+        }
+
+        if (userId) {
+            query.userId = userId;
         }
         try {
-            const response = await this.blogService.getPublishedBlogs(query);
-            res.status(200).json({ message: "Published blogs fetched successfully", status: "   ok", data: response });
-        } catch (error) {
-            console.error("Error fetching published blogs:", error);
-            res.status(500).json({ message: error.message, status: "error" });
-        }
-    }
-
-    getAPublishedBlog = async (req, res) => {
-        const id = req.params.id;
-
-        try {
-            const response = await this.blogService.getAPublishedBlog(id);
-            res.status(200).json({ message: "Published blogs fetched successfully", status: "   ok", data: response });
-        } catch (error) {
-            console.error("Error fetching published blogs:", error);
-            res.status(500).json({ message: error.message, status: "error" });
-        }
-    }
-
-    getBlogs = async (req, res) => {
-        try {
-            const response = await this.blogService.getBlogs();
-            res.status(200).json({ message: "Blogs fetched successfully", status: "ok", data: response });
+            const data = await this.blogService.getBlogs(query);
+            res.status(200).json({ message: "Blogs fetched successfully", status: "ok", data });
         } catch (error) {
             console.error("Error fetching blogs:", error);
-            res.status(500).json({ message: error.message, status: "error" });
-        }
-    }
-
-    getUserBlogs = async (req, res) => {
-        const userId = req.user._id;
-        try {
-            const response = await this.blogService.getUserBlogs(userId);
-            res.status(200).json({ message: "User blogs fetched successfully", status: "ok", data: response });
-        } catch (error) {
-            console.error("Error fetching User blogs:", error);
             res.status(500).json({ message: error.message, status: "error" });
         }
     }

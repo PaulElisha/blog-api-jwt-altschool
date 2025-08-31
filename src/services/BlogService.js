@@ -18,46 +18,27 @@ class BlogService {
         return { message: "Blog created successfully", status: "ok", data: blog };
     }
 
-    getPublishedBlogs = async (query) => {
-        const blogs = await Blog.find(query);
-        if (blogs.length === 0) {
-            const error = new Error('No published blogs found');
-            error.statusCode = 404;
-            throw error;
-        }
-        return blogs;
-    }
-
-    getAPublishedBlog = async (id) => {
-        const blog = await Blog.findOne(id);
-        if (!blog) {
-            const error = new Error('No blog found');
-            error.statusCode = 404;
-            throw error;
-        }
-        return blog;
-    }
-
-    getBlogs = async () => {
-        const blogs = await Blog.find({});
+    getBlogs = async (query) => {
+        const { state, userId } = query;
+        let blogs = await Blog.find(userId);
         if (blogs.length === 0) {
             const error = new Error('No blogs found');
             error.statusCode = 404;
             throw error;
         }
-        return blogs;
-    }
 
-    getUserBlogs = async (userId) => {
-        const blogs = await Blog.find({ userId });
-        if (!blogs || blogs.length === 0) {
-            const error = new Error('No blogs found for this user');
-            error.statusCode = 404;
-            throw error;
+        switch (state) {
+            case 'published':
+                blogs = blogs.filter(blog => blog.state === 'published');
+                break;
+            case 'archived':
+                blogs = blogs.filter(blog => blog.state === 'archived');
+                break;
+            default:
+                blogs = blogs.filter(blog => blog.state === 'draft');
         }
         return blogs;
     }
-
 
     updateBlog = async (filter, updateData) => {
         const blog = await Blog.findOne(filter);
