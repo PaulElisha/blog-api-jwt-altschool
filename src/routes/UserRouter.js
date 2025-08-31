@@ -1,5 +1,5 @@
 import express from 'express';
-import UserController from "../controllers/UserControllers.js";
+import UserController from "../controllers/UserController.js";
 
 class UserRouter {
     constructor() {

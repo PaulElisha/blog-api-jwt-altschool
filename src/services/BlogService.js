@@ -48,7 +48,7 @@ class BlogService {
             throw error;
         }
 
-        const updatedProduct = await Blog.findOneAndUpdate(filter, updateData, { new: true });
+        const updatedProduct = await Blog.updateOne(filter, updateData, { new: true });
 
         if (!updatedProduct) {
             const error = new Error('Product update failed');
@@ -65,7 +65,7 @@ class BlogService {
             throw error;
         }
 
-        const deletedProduct = await Blog.findOneAndDelete(filter, updateData, { new: true });
+        const deletedProduct = await Blog.deleteOne(filter);
 
         if (!deletedProduct) {
             const error = new Error('Deletion unsuccessful');

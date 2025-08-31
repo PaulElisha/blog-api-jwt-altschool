@@ -3,6 +3,7 @@ config({ path: ".env" });
 import express from "express";
 import { blogRouter } from "./src/routes/BlogRouter.js";
 import { userRouter } from "./src/routes/UserRouter.js";
+import { commentRouter } from './src/routes/CommentRouter.js'
 import { connectDb } from "./src/config/connectDb.js";
 
 const port = process.env.PORT;
@@ -26,6 +27,7 @@ class App {
     initializeRoutes() {
         this.app.use("/api/blog", blogRouter);
         this.app.use("/api/user", userRouter);
+        this.app.use('/api/comment', commentRouter);
     }
 
     startServer() {

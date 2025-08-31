@@ -1,5 +1,5 @@
 import express from 'express';
-import { BlogController } from "../controllers/BlogControllers.js";
+import { BlogController } from "../controllers/BlogController.js";
 import { BlogValidation } from "../middlewares/BlogValidation.js"
 import { UserAuthorization } from "../middlewares/AuthorizeUser.js";
 
