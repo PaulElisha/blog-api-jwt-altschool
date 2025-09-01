@@ -31,16 +31,6 @@ class CommentController {
         }
     }
 
-    getCommentsByBlogId = async (req, res) => {
-        try {
-            const response = await this.commentService.getCommentsByBlogId(req.params.blogId);
-            res.status(200).json({ message: "Comments fetched successfully", status: "ok", data: response });
-        } catch (error) {
-            console.error("Error fetching comments by blog ID:", error);
-            res.status(500).json({ message: "Internal Server Error", status: "error" });
-        }
-    }
-
     updateComment = async (req, res) => {
         const { commentId, blogId } = req.params;
         const { updateData } = req.body;

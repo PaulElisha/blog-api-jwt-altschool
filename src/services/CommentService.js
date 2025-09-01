@@ -1,9 +1,17 @@
-import e from "express";
 import Comment from "../models/Comment";
+import Blog from '../models/Blog';
 
 class CommentService {
-    async postComment(data) {
+    async postComment(postData) {
         const { blogId, userId, content } = postData;
+
+        const blog = await Blog.findOne({ _id: blogId, userId });
+
+        if (!blog) {
+            const error = new Error('Blog post not found');
+            error.status = 400;
+            throw error;
+        }
 
         if (!content) {
             const error = new Error("Content is required");
@@ -21,21 +29,36 @@ class CommentService {
     }
 
     async fetchComments(blogId) {
-        const comments = await Comment.find({ blogId });
-        if (comments.length === 0) {
-            const error = new Error("No comments found for this blog");
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            const error = new Error('Blog not found');
             error.status = 404;
             throw error;
         }
-        return comments;
-    }
 
-    async getCommentsByBlogId(blogId) {
-        return await Comment.find({ blogId }).populate("userId", "email").sort({ createdAt: -1 });
+        if (blog._id.toString() === blogId) {
+            const comments = await Comment.find({ blogId }).populate('userId', 'email').sort({ createdAt: -1 });
+            if (comments.length === 0) {
+                const error = new Error("No comments found for this blog");
+                error.status = 404;
+                throw error;
+            }
+            return comments;
+        }
     }
 
     async updateComment(filter, updateData) {
-        const comment = await Comment.findOne(filter);
+        const { commentId, blogId, userId } = filter;
+
+        const blog = await Blog.findOne({ _id: blogId, userId });
+
+        if (!blog) {
+            const error = new Error("Blog not found or you don't have permission to update comments on this blog");
+            error.status = 404;
+            throw error;
+        }
+
+        const comment = await Comment.findOne({ _id: commentId, blogId, userId });
         if (!comment) {
             const error = new Error("Comment not found or you don't have permission to re-write this comment");
             error.status = 404;
@@ -46,6 +69,14 @@ class CommentService {
     }
 
     async deleteComment({ commentId, blogId, userId }) {
+        const blog = await Blog.findOne({ _id: blogId, userId });
+
+        if (!blog) {
+            const error = new Error("Blog not found or you don't have permission to update comments on this blog");
+            error.status = 404;
+            throw error;
+        }
+
         const comment = await Comment.findOne({ _id: commentId, blogId, userId });
         if (!comment) {
             const error = new Error("Comment not found or you don't have permission to delete this comment");
@@ -53,7 +84,8 @@ class CommentService {
             throw error;
         }
 
-        return await Comment.deleteOne(filter);
+        await Comment.deleteOne(filter);
+        return;
     }
 }
 
