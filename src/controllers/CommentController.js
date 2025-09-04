@@ -22,8 +22,14 @@ class CommentController {
     }
 
     fetchComments = async (req, res) => {
+        const query = {};
+        const { blogId } = req.query;
+
+        if (blogId) {
+            query.blogId = blogId
+        }
         try {
-            const response = await this.commentService.fetchComments(req.params.blogId);
+            const response = await this.commentService.fetchComments(query);
             res.status(200).json({ message: "Comments fetched successfully", status: "ok", data: response });
         } catch (error) {
             console.error("Error fetching comments:", error);
@@ -32,11 +38,11 @@ class CommentController {
     }
 
     updateComment = async (req, res) => {
-        const { commentId, blogId } = req.params;
+        const { commentId } = req.params;
         const { updateData } = req.body;
         const { userId } = req.user;
 
-        const filter = { commentId, blogId, userId };
+        const filter = { commentId, userId };
         try {
             await this.commentService.updateComment(filter, updateData);
             res.status(200).json({ message: "Comment deleted successfully", status: "ok" });
@@ -46,10 +52,10 @@ class CommentController {
     }
 
     deleteComment = async (req, res) => {
-        const { commentId, blogId } = req.params;
+        const { commentId } = req.params;
         const { userId } = req.user;
 
-        const filter = { commentId, blogId, userId };
+        const filter = { commentId, userId };
         try {
             await this.commentService.deleteComment(filter);
             res.status(200).json({ message: "Comment deleted successfully", status: "ok" });

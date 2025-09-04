@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import Blog from '../models/Blog.js';
 
 class BlogService {
@@ -15,17 +16,11 @@ class BlogService {
             error.statusCode = 500;
             throw error;
         }
-        return { message: "Blog created successfully", status: "ok", data: blog };
     }
 
-    getBlogs = async (query) => {
-        const { state, userId } = query;
+    getUserBlogsByState = async (query, userId) => {
+        const { state } = query;
         let blogs = await Blog.find(userId);
-        if (blogs.length === 0) {
-            const error = new Error('No blogs found');
-            error.statusCode = 404;
-            throw error;
-        }
 
         switch (state) {
             case 'published':
@@ -37,13 +32,50 @@ class BlogService {
             default:
                 blogs = blogs.filter(blog => blog.state === 'draft');
         }
+        if (blogs.length === 0) {
+            const error = new Error('No blogs found');
+            error.statusCode = 404;
+            throw error;
+        }
         return blogs;
     }
 
+    getBlogs = async () => {
+        let blogs = await Blog.find({});
+
+        blogs = blogs.filter(blog => blog.state === 'published').populate('userId').sort({ createdAt: -1 });
+        if (blogs.length === 0) {
+            const error = new Error('No published blogs found');
+            error.statusCode = 404;
+            throw error;
+        }
+        return blogs;
+    }
+
+    getBlog = async (blogId) => {
+        const blog = await Blog.findById(blogId).populate('comments');
+
+        if (!blog) {
+            const error = new Error('Blog not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return blog;
+    }
+
     updateBlog = async (filter, updateData) => {
+        const { userId, } = filter;
         const blog = await Blog.findOne(filter);
         if (!blog) {
             const error = new Error('Blog not found or unauthorized');
+            error.statusCode = 404;
+            throw error;
+        }
+
+
+        if (blog.userId._id.toString() !== userId.toString()) {
+            const error = new Error('Not allowed to update this blog');
             error.statusCode = 404;
             throw error;
         }
@@ -58,6 +90,7 @@ class BlogService {
     }
 
     deleteBlog = async (filter) => {
+        const { userId, } = filter;
         const blog = await Blog.findOne(filter);
         if (!blog) {
             const error = new Error('Blog not found or unauthorized');
@@ -65,13 +98,14 @@ class BlogService {
             throw error;
         }
 
-        const deletedProduct = await Blog.deleteOne(filter);
-
-        if (!deletedProduct) {
-            const error = new Error('Deletion unsuccessful');
+        if (blog.userId._id.toString() !== userId.toString()) {
+            const error = new Error('Not allowed to delete this blog');
             error.statusCode = 404;
             throw error;
         }
+
+        await Blog.deleteOne(filter);
+        return;
     }
 }
 

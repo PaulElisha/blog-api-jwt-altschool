@@ -25,9 +25,9 @@ class App {
     }
 
     initializeRoutes() {
-        this.app.use("/api/blog", blogRouter);
-        this.app.use("/api/user", userRouter);
-        this.app.use('/api/comment', commentRouter);
+        this.app.use("/api/blogs", blogRouter);
+        this.app.use("/api/users", userRouter);
+        this.app.use('/api/comments', commentRouter);
     }
 
     startServer() {

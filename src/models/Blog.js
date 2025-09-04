@@ -23,7 +23,6 @@ const blogSchema = new Schema({
         type: String,
         enum: ["published", "archived", "draft", "deleted"],
         required: true,
-        default: "draft"
     },
     readCount: {
         type: Number,
@@ -41,6 +40,15 @@ const blogSchema = new Schema({
     }
 
 }, { timestamps: true });
+
+blogSchema.virtual("comments", {
+    ref: "Comment",
+    localField: "_id",
+    foreignField: "blogId",
+});
+
+blogSchema.set("toObject", { virtuals: true });
+blogSchema.set("toJSON", { virtuals: true });
 
 export default model("Blog", blogSchema);
 

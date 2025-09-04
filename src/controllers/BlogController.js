@@ -5,7 +5,7 @@ class BlogController {
         this.blogService = new BlogService();
     }
 
-    getBlogs = async (req, res) => {
+    getUserBlogsByState = async (req, res) => {
 
         const query = {};
 
@@ -16,14 +16,29 @@ class BlogController {
             query.state = state;
         }
 
-        if (userId) {
-            query.userId = userId;
-        }
         try {
-            const data = await this.blogService.getBlogs(query);
+            const data = await this.blogService.getUserBlogsByState(query, userId);
             res.status(200).json({ message: "Blogs fetched successfully", status: "ok", data });
         } catch (error) {
             console.error("Error fetching blogs:", error);
+            res.status(500).json({ message: error.message, status: "error" });
+        }
+    }
+
+    getBlogs = async (req, res) => {
+        try {
+            const blogs = await this.blogService.getBlogs();
+            res.status(200).json({ message: "Blogs fetched successfully", status: "ok", data: blogs });
+        } catch (error) {
+            res.status(500).json({ message: error.message, status: "error" });
+        }
+    }
+
+    getBlog = async (req, res) => {
+        try {
+            const blog = await this.blogService.getBlog(req.params.id);
+            res.status(200).json({ message: "Blog fetched!", status: "ok", data: blog });
+        } catch (error) {
             res.status(500).json({ message: error.message, status: "error" });
         }
     }
@@ -45,10 +60,10 @@ class BlogController {
         const blogId = req.params.id;
         const userId = req.user._id;
         if (!updateData || Object.keys(updateData).length === 0) {
-            return res.status(400).json({ message: 'No product data provided for update' });
+            return res.status(400).json({ message: 'No blog data provided for update' });
         }
 
-        const filter = { _id: productId, userId };
+        const filter = { _id: blogId, userId };
 
         try {
             const response = await this.blogService.updateBlog(filter, updateData);
