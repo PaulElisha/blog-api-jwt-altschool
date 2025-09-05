@@ -35,7 +35,6 @@ class BlogService {
     getBlogs = async () => {
         let blogs = await Blog.find({ state: 'published' }).populate('userId').sort({ createdAt: -1 });
 
-        blogs = blogs.filter(blog => blog.state === 'published')
         if (blogs.length === 0) {
             const error = new Error('No published blogs found');
             error.statusCode = 404;
@@ -45,7 +44,7 @@ class BlogService {
     }
 
     getFeedBlog = async (blogId) => {
-        const blogWithComments = await Blog.findByIdAndUpdate(blogId, { $inc: { readCount: 1 } }).populate('comments', 'userId');
+        const blogWithComments = await Blog.findByIdAndUpdate(blogId, { $inc: { readCount: 1 } }, { new: true }).populate('comments', 'userId');
 
         if (!blogWithComments) {
             const error = new Error('Blog not found');
@@ -57,16 +56,9 @@ class BlogService {
     }
 
     editBlog = async (filter, updateData) => {
-        const blog = await Blog.findOne(filter);
-        if (!blog) {
-            const error = new Error('User blog not found or unauthorized');
-            error.statusCode = 404;
-            throw error;
-        }
+        const updatedBlog = await Blog.findOneAndUpdate(filter, updateData, { new: true });
 
-        const updatedProduct = await Blog.updateOne(filter, updateData, { new: true });
-
-        if (!updatedProduct) {
+        if (!updatedBlog) {
             const error = new Error('Product update failed');
             error.statusCode = 500;
             throw error;
@@ -74,21 +66,13 @@ class BlogService {
     }
 
     publishBlog = async (filter) => {
-        const blog = await Blog.findOne(filter);
+        const blog = await Blog.findOneAndUpdate(filter, { $set: { state: 'published' } }, { new: true });
         if (!blog) {
             const error = new Error('User blog not found or unauthorized');
             error.statusCode = 404;
             throw error;
         }
 
-        if (blog.state === 'published') {
-            const error = new Error('Blog is already published');
-            error.statusCode = 400;
-            throw error;
-        }
-
-        blog.state = 'published';
-        await blog.save();
         return blog;
     }
 
