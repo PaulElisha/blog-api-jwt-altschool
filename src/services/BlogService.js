@@ -44,7 +44,7 @@ class BlogService {
     }
 
     getFeedBlog = async (blogId) => {
-        const blogWithComments = await Blog.findByIdAndUpdate(blogId, { $inc: { readCount: 1 } }, { new: true }).populate('comments', 'userId');
+        const blogWithComments = await Blog.findByIdAndUpdate(blogId, { $inc: { readCount: 1 } }, { new: true }).populate('comments', 'userId content blogId').lean();
 
         if (!blogWithComments) {
             const error = new Error('Blog not found');
@@ -52,7 +52,7 @@ class BlogService {
             throw error;
         }
 
-        return blogWithComments;
+        return { ...blogWithComments, commentCount: blogWithComments.comments.length };
     }
 
     editBlog = async (filter, updateData) => {

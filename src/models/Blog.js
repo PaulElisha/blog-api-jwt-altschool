@@ -23,13 +23,15 @@ const blogSchema = new Schema({
         type: String,
         enum: ["published", "archived", "draft"],
         required: true,
+        default: 'draft'
     },
     readCount: {
         type: Number,
         default: 0
     },
-    readingTime: {
-        type: String
+    commentCount: {
+        type: Number,
+        default: 0
     },
     tags: {
         type: Array

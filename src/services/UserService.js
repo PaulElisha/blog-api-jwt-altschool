@@ -50,6 +50,16 @@ class UserService {
         return users;
     }
 
+    getUser = async (id) => {
+        const user = await User.findById(id).populate('blogs');
+        if (!user) {
+            const error = new Error("User not found");
+            error.statusCode = 404;
+            throw error;
+        }
+        return user;
+    }
+
     updateUser = async (id, data) => {
         const user = await User.findByIdAndUpdate(id, data, { new: true });
         if (!user) {
