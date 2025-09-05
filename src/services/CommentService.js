@@ -12,18 +12,6 @@ class CommentService {
         return comment;
     }
 
-    async fetchComments(query) {
-        const { blogId } = query;
-
-        let comments = await Comment.find({ blogId }).populate('blogId', 'userId').sort({ createdAt: -1 });
-        if (comments.length === 0) {
-            const error = new Error("No comments found for this blog");
-            error.status = 404;
-            throw error;
-        }
-        return comments;
-    }
-
     async updateComment(filter, updateData) {
         const comment = await Comment.findOne(filter);
         if (!comment) {

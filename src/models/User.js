@@ -20,6 +20,16 @@ const userSchema = new Schema({
     }
 }, { timestamps: true });
 
+userSchema.virtual('blogs', {
+    ref: 'Blog',
+    localField: '_id',
+    foreignField: 'userId'
+});
+
+userSchema.set("toObject", { virtuals: true });
+userSchema.set("toJSON", { virtuals: true });
+
+
 userSchema.pre('save', async function (next) {
     try {
         const salt = await bcrypt.genSalt(10);

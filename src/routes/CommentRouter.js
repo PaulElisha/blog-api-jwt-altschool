@@ -11,10 +11,9 @@ class CommentRouter {
     }
 
     registerRoutes() {
-        this.router.get("/", this.userAccess.authorizeUser, this.commentController.fetchComments);
-        this.router.post("/", this.userAccess.authorizeUser, this.commentController.postComment);
-        this.router.put("/:commentId", this.userAccess.authorizeUser, this.commentController.updateComment);
-        this.router.delete("/:commentId", this.userAccess.authorizeUser, this.commentController.deleteComment);
+        this.router.post("/:blogId", this.userAccess.authorizeUser, this.commentController.postComment);
+        this.router.put("/:id", this.userAccess.authorizeUser, this.commentController.updateComment);
+        this.router.delete("/:id", this.userAccess.authorizeUser, this.commentController.deleteComment);
     }
 }
 

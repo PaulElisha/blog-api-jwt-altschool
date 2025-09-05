@@ -5,7 +5,7 @@ class BlogController {
         this.blogService = new BlogService();
     }
 
-    getUserBlogsByState = async (req, res) => {
+    getBlogsByState = async (req, res) => {
 
         const query = {};
 
@@ -17,7 +17,7 @@ class BlogController {
         }
 
         try {
-            const data = await this.blogService.getUserBlogsByState(query, userId);
+            const data = await this.blogService.getBlogsByState(query, userId);
             res.status(200).json({ message: "Blogs fetched successfully", status: "ok", data });
         } catch (error) {
             console.error("Error fetching blogs:", error);
@@ -34,10 +34,10 @@ class BlogController {
         }
     }
 
-    getBlog = async (req, res) => {
+    getFeedBlog = async (req, res) => {
         try {
-            const blog = await this.blogService.getBlog(req.params.id);
-            res.status(200).json({ message: "Blog fetched!", status: "ok", data: blog });
+            const blogWithComments = await this.blogService.getFeedBlog(req.params.id);
+            res.status(200).json({ message: "Blog fetched!", status: "ok", data: blogWithComments });
         } catch (error) {
             res.status(500).json({ message: error.message, status: "error" });
         }
@@ -55,7 +55,7 @@ class BlogController {
         }
     }
 
-    updateBlog = async (req, res) => {
+    editBlog = async (req, res) => {
         const updateData = req.body;
         const blogId = req.params.id;
         const userId = req.user._id;
@@ -66,10 +66,24 @@ class BlogController {
         const filter = { _id: blogId, userId };
 
         try {
-            const response = await this.blogService.updateBlog(filter, updateData);
+            const response = await this.blogService.editBlog(filter, updateData);
             res.status(200).json({ message: "Blog updated successfully", status: "ok", data: response });
         } catch (error) {
             console.error("Error updating Blog:", error);
+            res.status(500).json({ message: error.message, status: "error" });
+        }
+    }
+
+    publishBlog = async (req, res) => {
+        const userId = req.user._id;
+        const blogId = req.params.id;
+
+        const filter = { blogId, userId };
+        try {
+            const blog = await this.blogService.publishBlog(filter);
+            res.status(200).json({ message: "Blog published successfully", status: "ok", data: blog });
+        } catch (error) {
+            console.error("Error publishing Blog:", error);
             res.status(500).json({ message: error.message, status: "error" });
         }
     }
