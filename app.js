@@ -3,6 +3,7 @@ config({ path: ".env" });
 import express from "express";
 import { blogRouter } from "./src/routes/BlogRouter.js";
 import { userRouter } from "./src/routes/UserRouter.js";
+import { authRouter } from "./src/routes/AuthRouter.js";
 import { commentRouter } from './src/routes/CommentRouter.js'
 import { connectDb } from "./src/config/connectDb.js";
 
@@ -25,8 +26,9 @@ class App {
     }
 
     initializeRoutes() {
-        this.app.use("/api/blogs", blogRouter);
+        this.app.use('api/auth', authRouter);
         this.app.use("/api/users", userRouter);
+        this.app.use("/api/blogs", blogRouter);
         this.app.use('/api/comments', commentRouter);
     }
 
