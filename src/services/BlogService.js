@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import Blog from '../models/Blog.js';
 
 class BlogService {
@@ -52,7 +51,7 @@ class BlogService {
             throw error;
         }
 
-        return { ...blogWithComments, commentCount: blogWithComments.comments.length };
+        return { ...blogWithComments.toObject(), commentCount: blogWithComments.comments.length };
     }
 
     editBlog = async (filter, updateData) => {

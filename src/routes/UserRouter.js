@@ -11,8 +11,8 @@ class UserRouter {
     }
 
     registerRoutes() {
-        this.router.get("/", this.userAccess.authorizeUser, this.userController.getUser);
-        this.router.put("/:id", this.authorizeUser.authorizeUser, this.userController.editUser);
+        this.router.get("/:id", this.userAccess.authorizeUser, this.userController.getUser);
+        this.router.put("/:id", this.userAccess.authorizeUser, this.userController.editUser);
         this.router.delete("/:id", this.userAccess.authorizeUser, this.userController.deleteUser);
     }
 }

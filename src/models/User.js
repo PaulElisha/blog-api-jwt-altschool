@@ -17,6 +17,10 @@ const userSchema = new Schema({
     },
     password: {
         type: String
+    },
+    blogsCount: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 
