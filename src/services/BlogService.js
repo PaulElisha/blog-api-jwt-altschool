@@ -62,6 +62,8 @@ class BlogService {
             error.statusCode = 500;
             throw error;
         }
+
+        return updatedBlog;
     }
 
     publishBlog = async (filter) => {

@@ -28,8 +28,8 @@ class CommentController {
 
         const filter = { commentId, userId };
         try {
-            await this.commentService.updateComment(filter, updateData);
-            res.status(200).json({ message: "Comment deleted successfully", status: "ok" });
+            const response = await this.commentService.updateComment(filter, updateData);
+            res.status(200).json({ message: "Comment deleted successfully", status: "ok", data: response });
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error", status: "error" });
         }

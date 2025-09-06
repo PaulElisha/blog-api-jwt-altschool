@@ -13,14 +13,14 @@ class CommentService {
     }
 
     async updateComment(filter, updateData) {
-        const comment = await Comment.findOne(filter);
-        if (!comment) {
+        const updatedComment = await Comment.updateOne(filter, updateData, { new: true });
+
+        if (!updatedComment) {
             const error = new Error("Comment not found or you don't have permission to re-write this comment");
             error.status = 404;
             throw error;
         }
-
-        return await Comment.updateOne(filter, updateData, { new: true });
+        return updatedComment;
     }
 
     async deleteComment(filter) {

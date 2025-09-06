@@ -13,13 +13,15 @@ class UserService {
     }
 
     editUser = async (id, data) => {
-        const user = await User.findOne({ id });
-        if (!user) {
+        const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
+
+        if (!updatedUser) {
             const error = new Error("User not found");
             error.statusCode = 404;
             throw error;
         }
-        return await User.findByIdAndUpdate(id, data, { new: true });
+
+        return updatedUser;
     }
 
     deleteUser = async (id) => {
