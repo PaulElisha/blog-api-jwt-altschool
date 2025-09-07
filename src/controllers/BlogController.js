@@ -78,7 +78,7 @@ class BlogController {
         const userId = req.user._id;
         const blogId = req.params.id;
 
-        const filter = { blogId, userId };
+        const filter = { _id: blogId, userId };
         try {
             const blog = await this.blogService.publishBlog(filter);
             res.status(200).json({ message: "Blog published successfully", status: "ok", data: blog });

@@ -3,13 +3,14 @@ import Blog from '../models/Blog.js';
 
 class UserService {
     getUserBlogs = async (id) => {
-        const userBlogs = await User.findById(id).populate('blogs');
+        const userBlogs = await User.findById(id).populate('blogs').lean();
         if (!userBlogs) {
             const error = new Error("User's Blogs not found");
             error.statusCode = 404;
             throw error;
         }
-        return { ...userBlogs.toObject(), blogsCount: userBlogs.blogs.length };
+        const { user, ...blogs } = userBlogs;
+        return { user, blogs, blogsCount: blogs.length };
     }
 
     editUser = async (id, data) => {

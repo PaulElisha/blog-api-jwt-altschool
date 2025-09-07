@@ -7,7 +7,8 @@ class CommentController {
     }
 
     postComment = async (req, res) => {
-        const { blogId, content } = req.body;
+        const { blogId } = req.params;
+        const { content } = req.body;
         const { userId } = req.user;
 
         const postData = { blogId, userId, content };

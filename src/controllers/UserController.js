@@ -5,6 +5,7 @@ class UserController {
     constructor() {
         this.userService = new UserService();
     }
+
     getUser = async (req, res) => {
         try {
             const response = await this.userService.getUser(req.params.id);

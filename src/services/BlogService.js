@@ -24,7 +24,7 @@ class BlogService {
         let blogs = await Blog.find({ userId, state });
 
         if (blogs.length === 0) {
-            const error = new Error('No blogs found');
+            const error = new Error(`No ${state} blogs found for this user`);
             error.statusCode = 404;
             throw error;
         }
@@ -32,7 +32,7 @@ class BlogService {
     }
 
     getBlogs = async () => {
-        let blogs = await Blog.find({ state: 'published' }).populate('userId').sort({ createdAt: -1 });
+        let blogs = await Blog.find({ state: 'published' }).populate('userId', 'firstName').sort({ createdAt: -1 });
 
         if (blogs.length === 0) {
             const error = new Error('No published blogs found');
@@ -50,8 +50,9 @@ class BlogService {
             error.statusCode = 404;
             throw error;
         }
+        const { comments, ...blog } = blogWithComments;
 
-        return { ...blogWithComments.toObject(), commentCount: blogWithComments.comments.length };
+        return { comments, blog, commentCount: comments.length };
     }
 
     editBlog = async (filter, updateData) => {
