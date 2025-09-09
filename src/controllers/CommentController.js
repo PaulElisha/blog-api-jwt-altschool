@@ -5,6 +5,17 @@ class CommentController {
     constructor() {
         this.commentService = new CommentService();
     }
+    getComment = async (req, res) => {
+        const { blogId, commentId } = req.params;
+        const filter = { _id: commentId, blogId };
+
+        try {
+            const response = await this.commentService.getComment(filter);
+            res.status(200).json({ message: "Comments fetched successfully", status: "ok", data: response });
+        } catch (error) {
+            res.status(500).json({ message: "Internal Server Error", status: "error" });
+        }
+    }
 
     postComment = async (req, res) => {
         const { blogId } = req.params;

@@ -27,17 +27,37 @@ class BlogController {
 
     getBlogs = async (req, res) => {
         try {
-            const blogs = await this.blogService.getBlogs();
+            const data = await this.blogService.getBlogs();
+            res.status(200).json({ message: "Blogs fetched successfully", status: "ok", data });
+        } catch (error) {
+            res.status(500).json({ message: error.message, status: "error" });
+        }
+    }
+
+    getFeedBlogBySlug = async (req, res) => {
+        const { slug } = req.params;
+        try {
+            const blog = await this.blogService.getFeedBlogBySlug(slug);
+            res.status(200).json({ message: "Blog fetched successfully", status: "ok", data: blog });
+        } catch (error) {
+            res.status(500).json({ message: error.message, status: "error" });
+        }
+    }
+
+    getBlogsByTag = async (req, res) => {
+        const { tag } = req.params;
+        try {
+            const blogs = await this.blogService.getBlogsByTag(tag);
             res.status(200).json({ message: "Blogs fetched successfully", status: "ok", data: blogs });
         } catch (error) {
             res.status(500).json({ message: error.message, status: "error" });
         }
     }
 
-    getFeedBlog = async (req, res) => {
+    getMostReadBlogs = async (req, res) => {
         try {
-            const blogWithComments = await this.blogService.getFeedBlog(req.params.id);
-            res.status(200).json({ message: "Blog fetched!", status: "ok", data: blogWithComments });
+            const blogs = await this.blogService.getMostReadBlogs();
+            res.status(200).json({ message: "Most read blogs fetched successfully", status: "ok", data: blogs });
         } catch (error) {
             res.status(500).json({ message: error.message, status: "error" });
         }
@@ -45,8 +65,12 @@ class BlogController {
 
     createBlog = async (req, res) => {
         const userId = req.user._id;
+        const slug = req.body.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        req.body.slug = slug;
+        req.body.userId = userId;
+
         try {
-            const response = await this.blogService.createBlog({ ...req.body, userId });
+            const response = await this.blogService.createBlog(req.body);
             res.status(201).json({ message: "User created successfully", status: "ok", data: response });
 
         } catch (error) {

@@ -1,7 +1,10 @@
 import { config } from "dotenv";
 config({ path: ".env" });
 import express from "express";
+import cors from "cors";
+
 import { blogRouter } from "./src/routes/BlogRouter.js";
+import { aiRouter } from "./src/routes/AiRouter.js";
 import { userRouter } from "./src/routes/UserRouter.js";
 import { authRouter } from "./src/routes/AuthRouter.js";
 import { commentRouter } from './src/routes/CommentRouter.js'
@@ -21,6 +24,7 @@ class App {
     }
 
     initializeMiddlewares() {
+        this.app.use(cors());
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
     }
@@ -30,6 +34,7 @@ class App {
         this.app.use("/api/users", userRouter);
         this.app.use("/api/blogs", blogRouter);
         this.app.use('/api/comments', commentRouter);
+        this.app.use("/api/ai", aiRouter);
     }
 
     startServer() {

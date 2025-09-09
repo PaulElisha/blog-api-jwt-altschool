@@ -13,7 +13,9 @@ class BlogRouter {
     }
 
     registerRoutes() {
-        this.router.get('/:id/', this.userAccess.authorizeUser, this.blogController.getFeedBlog);
+        this.router.get('/:slug', this.blogController.getFeedBlogBySlug);
+        this.router.get('/tags/:tag', this.blogController.getBlogsByTag);
+        this.router.get('/most-read', this.blogController.getMostReadBlogs);
         this.router.get("/", this.userAccess.authorizeUser, this.blogController.getBlogs);
         this.router.get("/", this.userAccess.authorizeUser, this.blogController.getBlogsByState);
         this.router.post("/", this.userAccess.authorizeUser, this.blogValidation.validateBlog, this.blogController.createBlog);

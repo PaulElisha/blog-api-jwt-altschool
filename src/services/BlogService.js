@@ -32,27 +32,60 @@ class BlogService {
     }
 
     getBlogs = async () => {
-        let blogs = await Blog.find({ state: 'published' }).populate('userId', 'firstName').sort({ createdAt: -1 });
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 20;
+        const skip = (page - 1) * limit;
+
+        let blogs = await Blog.find({ state: 'published' }).populate('userId', 'firstName').sort({ createdAt: -1 }).skip(skip).limit(limit);
+
+        const [totalCount, publishedCount, draftCount] = await Promise.all([blogs.countDocuments(), blogs.countDocuments({ status: 'published' }), blogs.countDocuments({ status: 'draft' })]);
 
         if (blogs.length === 0) {
             const error = new Error('No published blogs found');
             error.statusCode = 404;
             throw error;
         }
-        return blogs;
+        return {
+            blogs, page, totalPages: Math.ceil(totalCount / limit), totalCount, counts: { all: totalCount, published: publishedCount, draft: draftCount }
+        };
     }
 
-    getFeedBlog = async (blogId) => {
-        const blogWithComments = await Blog.findByIdAndUpdate(blogId, { $inc: { readCount: 1 } }, { new: true }).populate('comments', 'userId content blogId').lean();
+    getFeedBlogBySlug = async (slug) => {
+        const blogWithComments = await Blog.findOneAndUpdate({ slug, state: 'published' }, { $inc: { readCount: 1 } }, { new: true }).populate('comments', 'userId content').lean();
 
         if (!blogWithComments) {
             const error = new Error('Blog not found');
             error.statusCode = 404;
             throw error;
         }
+
         const { comments, ...blog } = blogWithComments;
 
         return { comments, blog, commentCount: comments.length };
+    }
+
+    getBlogsByTag = async (tag) => {
+        const blogs = await Blog.find({ tags: { $exists: true, $ne: [] }, state: 'published' }).populate('userId', 'firstName').sort({ createdAt: -1 });
+
+        if (blogs.length === 0) {
+            const error = new Error(`No published blogs found with tag: ${tag}`);
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return blogs;
+    }
+
+    getMostReadBlogs = async () => {
+        const blogs = await Blog.find({ state: 'published' }).sort({ readCount: -1 }).limit(10).populate('userId', 'firstName');
+
+        if (blogs.length === 0) {
+            const error = new Error('No published blogs found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return blogs;
     }
 
     editBlog = async (filter, updateData) => {

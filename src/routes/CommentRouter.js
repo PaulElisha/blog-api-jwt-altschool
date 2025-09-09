@@ -11,6 +11,7 @@ class CommentRouter {
     }
 
     registerRoutes() {
+        this.router.get("/:blogId/:id", this.userAccess.authorizeUser, this.commentController.getComment);
         this.router.post("/:blogId", this.userAccess.authorizeUser, this.commentController.postComment);
         this.router.put("/:id", this.userAccess.authorizeUser, this.commentController.updateComment);
         this.router.delete("/:id", this.userAccess.authorizeUser, this.commentController.deleteComment);

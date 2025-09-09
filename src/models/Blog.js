@@ -11,9 +11,10 @@ const blogSchema = new Schema({
         required: true,
         unique: true
     },
-    author: {
+    slug: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     description: {
         type: String,
