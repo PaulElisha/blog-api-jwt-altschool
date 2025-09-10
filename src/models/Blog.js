@@ -35,7 +35,8 @@ const blogSchema = new Schema({
         default: 0
     },
     tags: {
-        type: Array
+        type: Array,
+        required: true
     },
     body: {
         type: String,

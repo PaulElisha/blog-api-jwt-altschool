@@ -5,12 +5,12 @@ class BlogValidation {
         try {
             const schema = joi.object({
                 title: joi.string().required(),
-                author: joi.string().required(),
+                slug: joi.string().required(),
                 description: joi.string().required(),
                 state: joi.string().valid("published", "archived", "draft", "deleted").required(),
                 readCount: joi.string().optional(),
-                readingTime: joi.string().optional(),
-                tags: joi.string().optional(),
+                commentCount: joi.string().optional(),
+                tags: joi.string().required(),
                 body: joi.string().required()
             });
             const { error, } = schema.validate(req.body);
